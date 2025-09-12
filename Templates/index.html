@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargador de Instagram</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        .error {
+            color: #e74c3c;
+        }
+        .success {
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Descargador de Videos de Instagram</h1>
+        <p>Pega aquí las URLs de los videos de Instagram (una por línea):</p>
+        <textarea id="urls" placeholder="https://www.instagram.com/reel/ejemplo1/&#10;https://www.instagram.com/p/ejemplo2/"></textarea>
+        <button id="downloadBtn">Descargar Videos</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            const urls = document.getElementById('urls').value.split('\n').map(url => url.trim()).filter(url => url);
+            const statusDiv = document.getElementById('status');
+            
+            if (urls.length === 0) {
+                statusDiv.textContent = 'Por favor, introduce al menos una URL.';
+                statusDiv.className = 'error';
+                return;
+            }
+
+            statusDiv.textContent = 'Iniciando descarga... Esto puede tardar unos minutos.';
+            statusDiv.className = '';
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls: urls })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'instagram_videos.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    statusDiv.textContent = '¡Descarga completada! El archivo ZIP se está descargando.';
+                    statusDiv.className = 'success';
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la descarga.');
+                }
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
