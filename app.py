@@ -60,8 +60,4 @@ def download_videos():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Eliminar el zip antiguo si existe
-    if os.path.exists('downloads/instagram_videos.zip'):
-        os.remove('downloads/instagram_videos.zip')
-    
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
