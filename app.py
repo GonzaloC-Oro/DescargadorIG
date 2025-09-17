@@ -12,7 +12,7 @@ ydl_opts = {
     'outtmpl': os.path.join('downloads', '%(id)s.%(ext)s'),
     'quiet': True,
     'no_warnings': True,
-    'cookiefile': os.environ.get('INSTAGRAM_COOKIES'),
+    
 }
 
 @app.route('/')
@@ -20,13 +20,19 @@ def index():
     return render_template('index.html')
 
 @app.route('/download', methods=['POST'])
-def download_videos():
+def download_video():
+    data = request.get_json()
+    urls = data.get('urls', [])
+
+    # Obtener las cookies de la variable de entorno
+    cookies_json = os.environ.get('INSTAGRAM_COOKIES')
+
+    # Convertir la cadena JSON a un objeto Python
     try:
-        data = request.get_json()
-        urls = data.get('urls', [])
-        
-        if not urls:
-            return jsonify({'error': 'No URLs provided'}), 400
+        cookies_list = json.loads(cookies_json)
+        cookies_dict = {c['name']: c['value'] for c in cookies_list}
+    except Exception as e:
+        return jsonify({"error": "Error al procesar las cookies"}), 500
 
         # Crear carpeta de descargas si no existe
         download_dir = 'downloads'
