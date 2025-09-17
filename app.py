@@ -66,6 +66,3 @@ def download_video():
             os.remove(file) # Elimina los archivos originales después de añadirlos al ZIP
     
     return send_file(zip_path, as_attachment=True)
-
-if __name__ == '__main__':
-    app.run(debug=True)
