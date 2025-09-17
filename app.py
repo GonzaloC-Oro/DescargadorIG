@@ -53,7 +53,7 @@ def download_video():
                     downloaded_files.append(video_file)
             except Exception as e:
                 print(f"Error descargando {url}: {e}")
-                continue # Continúa con el siguiente video si este falla
+                continue
 
     if not downloaded_files:
         return jsonify({'error': 'No se pudo descargar ningún video. Asegúrate de que las URLs son correctas y el contenido es público.'}), 500
@@ -63,6 +63,6 @@ def download_video():
     with zipfile.ZipFile(zip_path, 'w') as zipf:
         for file in downloaded_files:
             zipf.write(file, os.path.basename(file))
-            os.remove(file) # Elimina los archivos originales después de añadirlos al ZIP
+            os.remove(file)
     
     return send_file(zip_path, as_attachment=True)
