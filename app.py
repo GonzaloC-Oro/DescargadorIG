@@ -12,8 +12,7 @@ ydl_opts = {
     'outtmpl': os.path.join('downloads', '%(id)s.%(ext)s'),
     'quiet': True,
     'no_warnings': True,
-    'username': os.environ.get('IG_USERNAME'),
-    'password': os.environ.get('IG_PASSWORD'),
+    'cookiefile': os.environ.get('INSTAGRAM_COOKIES'),
 }
 
 @app.route('/')
